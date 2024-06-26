@@ -3,19 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GLB File Viewer</title>
+    <title>Drag and Drop .glb File</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="dropZone">Drop your .glb file here</div>
-    <div id="urlInputContainer">
-        <input type="text" id="urlInput" placeholder="Enter URL of .glb file">
-        <button id="loadButton">Load Model</button>
+    <div id="drop-area">
+        <h1>Drag and Drop a .glb File Here</h1>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@google/model-viewer@1.9.1/dist/model-viewer.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-    <script src="main.js"></script>
+
+    <div id="model-viewer"></div>
+
+    <script>
+        const dropArea = document.getElementById('drop-area');
+        const modelViewer = document.getElementById('model-viewer');
+
+        dropArea.addEventListener('dragover', handleDragOver);
+        dropArea.addEventListener('drop', handleDrop);
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            dropArea.classList.add('drag-over');
+        }
+
+        async function handleDrop(event) {
+            event.preventDefault();
+
+            const file = event.dataTransfer.files[0];
+            if (file && file.name.endsWith('.glb')) {
+                const formData = new FormData();
+                formData.append('glbFile', file);
+
+                try {
+                    const response = await fetch('http://localhost:3000/upload', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    const fileUrl = await response.text();
+                    displayGLBModel(fileUrl);
+                } catch (error) {
+                    console.error('Error uploading file:', error);
+                }
+            } else {
+                alert('Please drop a .glb file.');
+            }
+
+            dropArea.classList.remove('drag-over');
+        }
+
+        function displayGLBModel(fileUrl) {
+            modelViewer.innerHTML = `<model-viewer src="${fileUrl}" alt="3D Model"></model-viewer>`;
+        }
+    </script>
 </body>
 </html>
