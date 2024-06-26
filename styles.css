@@ -1,0 +1,27 @@
+body {
+    margin: 0;
+}
+
+#dropZone {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 4px dashed #ccc;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#dropZone.dragover {
+    border-color: #000;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    background: white;
+}
