@@ -4,7 +4,7 @@ const modelViewer = document.getElementById('model-viewer');
 dropArea.addEventListener('dragover', handleDragOver);
 dropArea.addEventListener('drop', handleDrop);
 
-function handleDragOver(event) {
+async function handleDragOver(event) {
     event.preventDefault();
     dropArea.classList.add('drag-over');
 }
@@ -18,10 +18,15 @@ async function handleDrop(event) {
         formData.append('glbFile', file);
 
         try {
-            const response = await fetch('http://localhost:3000/upload', {
+            const response = await fetch('/upload', {
                 method: 'POST',
                 body: formData
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to upload file.');
+            }
+
             const fileUrl = await response.text();
             displayGLBModel(fileUrl);
         } catch (error) {
@@ -37,4 +42,3 @@ async function handleDrop(event) {
 function displayGLBModel(fileUrl) {
     modelViewer.innerHTML = `<model-viewer src="${fileUrl}" alt="3D Model"></model-viewer>`;
 }
-
